@@ -10,6 +10,8 @@ You can find code for other versions of DustDuino on http://dustduino.org/
 
 This is the Arduino code for sending SMS with the readings of the equipment.
 
+IMPORTANT: This code don't run in Arduino IDE 1.0.5. It was compiled using IDE 1.6.5.
+
 Hardware used:
 - Arduino UNO
 - SD Card Shield Seeed Studio: http://www.seeedstudio.com/wiki/SD_Card_Shield 

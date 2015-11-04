@@ -1,4 +1,4 @@
-// DustDuinoSMS v0.1
+// DustDuinoSMS 0.1.2
 // Last Updated 4 November 2015
 //
 // Written VJ pixel, based on code by Matthew Schroyer and others
