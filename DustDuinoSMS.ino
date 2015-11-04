@@ -11,9 +11,6 @@ char remoteNum[] = "000000000000"; // number of the FrontlineCloud phone
 
 //888888888888888888888888888888888888888888888888888888888888888888888888888888888888
 
-// Include library to convert float to string
-// #include<stdlib.h>
-
 // Include the GSM library
 #include <GSM.h>
 
@@ -21,7 +18,7 @@ char remoteNum[] = "000000000000"; // number of the FrontlineCloud phone
 GSM gsmAccess;
 GSM_SMS sms;
 
-String txtMsg = ""; // message with data
+String txtMsg = ""; // data send by SMS
 unsigned long starttime;
 
 unsigned long triggerOnP1;
@@ -111,13 +108,11 @@ void loop()
     triggerP2 = false;
   }
 
-  // Function creates particle count and mass concentration
-  // from PPD-42 low pulse occupancy (LPO).
+  // Function creates particle count and mass concentration from PPD-42 low pulse occupancy (LPO)
   if ((millis() - starttime) > sampletime_ms)
   {
 
-    // Generates PM10 and PM2.5 count from LPO.
-    // Derived from code created by Chris Nafis
+    // Generates PM10 and PM2.5 count from LPO. Derived from code created by Chris Nafis
     // http://www.howmuchsnow.com/arduino/airquality/grovedust/
 
     ratioP1 = durationP1/(sampletime_ms*10.0);
@@ -127,11 +122,9 @@ void loop()
     float PM10count = countP2;
     float PM25count = countP1 - countP2;
 
-    // Assues density, shape, and size of dust
-    // to estimate mass concentration from particle
-    // count. This method was described in a 2009
-    // paper by Uva, M., Falcone, R., McClellan, A.,
-    // and Ostapowicz, E.
+    // Assues density, shape, and size of dust to estimate mass concentration from particle
+    // count. This method was described in a 2009 paper by Uva, M., Falcone, R., McClellan,
+    // A., and Ostapowicz, E.
     // http://wireless.ece.drexel.edu/research/sd_air_quality.pdf
 
     // begins PM10 mass concentration algorithm
@@ -149,12 +142,9 @@ void loop()
     double mass25 = density*vol25;
     float concSmall = (PM25count)*K*mass25;
 
-    String sPM10count = String(PM10count); // dtostrf(FLOAT,WIDTH,PRECSISION,BUFFER);
-    //String sPM10count;
-    //dtostrf(PM10count,4,2,sPM10count);
-    String sPM25count = String(PM25count); // dtostrf(FLOAT,WIDTH,PRECSISION,BUFFER);
-    //String sPM25count;
-    //dtostrf(PM25count,4,2,sPM25count);
+    // convert numbers to string
+    String sPM10count = String(PM10count);
+    String sPM25count = String(PM25count);
     String sConcLarge = String(concLarge);
     String sConcSmall = String(concSmall);
 
