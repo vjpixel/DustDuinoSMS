@@ -1,4 +1,4 @@
-// DustDuinoSMS 0.1.2
+// DustDuinoSMS 0.1.3
 // Last Updated 4 November 2015
 //
 // Written VJ pixel, based on code by Matthew Schroyer and others
@@ -6,7 +6,7 @@
 //888888888888888888888888888888888888888888888888888888888888888888888888888888888888
 
 // CONFIGURE HERE
-unsigned long sampletime_ms = 1*60*1000; // = 1m * 60s * 1000ms | time interval for posting
+unsigned long sampletime_ms = 3600000; // = 60m * 60s * 1000ms | time interval for posting
 char remoteNum[] = "000000000000"; // number of the FrontlineCloud phone
 
 //888888888888888888888888888888888888888888888888888888888888888888888888888888888888
