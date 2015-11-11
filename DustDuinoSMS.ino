@@ -7,7 +7,7 @@
 
 // CONFIGURE HERE
 unsigned long sampletime_ms = 3600000; // = 60m * 60s * 1000ms | time interval for posting
-char remoteNum[] = "000000000000"; // number of the FrontlineCloud phone
+char remoteNum[] = "011976983000"; // number of the FrontlineCloud phone
 
 //888888888888888888888888888888888888888888888888888888888888888888888888888888888888
 
@@ -43,7 +43,10 @@ float countP2;
 
 void setup(){
 
-  // connected in UART
+  // turn on GSM shield
+  powerUpOrDown();
+
+  // dust sensor connected in UART
   pinMode(1, INPUT);
   pinMode(0, INPUT);
 
@@ -157,7 +160,17 @@ void loop()
     durationP2 = 0;
     starttime = millis();
   }
+}
 
+void powerUpOrDown()
+{
+  pinMode(6, OUTPUT); 
+  digitalWrite(6,LOW);
+  delay(1000);
+  digitalWrite(6,HIGH);
+  delay(2000);
+  digitalWrite(6,LOW);
+  delay(3000);
 }
 
 
