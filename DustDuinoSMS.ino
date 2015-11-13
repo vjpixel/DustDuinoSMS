@@ -1,13 +1,20 @@
-// DustDuinoSMS 0.1.3
-// Last Updated 4 November 2015
+// DustDuinoSMS 0.1.4
+// Last Updated 13 November 2015
 //
 // Written VJ pixel, based on code by Matthew Schroyer and others
 //
 //888888888888888888888888888888888888888888888888888888888888888888888888888888888888
 
 // CONFIGURE HERE
-unsigned long sampletime_ms = 3600000; // = 60m * 60s * 1000ms | time interval for posting
-char remoteNum[] = "011976983000"; // number of the FrontlineCloud phone
+
+//  time interval for posting
+unsigned long sampletime_ms = 3600000; // = 60m * 60s * 1000ms
+
+// id of the device
+String id = "redbull"; 
+
+// number of the FrontlineCloud phone
+char remoteNum[] = "011941876615"; 
 
 //888888888888888888888888888888888888888888888888888888888888888888888888888888888888
 
@@ -18,7 +25,7 @@ char remoteNum[] = "011976983000"; // number of the FrontlineCloud phone
 GSM gsmAccess;
 GSM_SMS sms;
 
-String txtMsg = ""; // data send by SMS
+String txtMsg = ""; // data sent by SMS
 unsigned long starttime;
 
 unsigned long triggerOnP1;
@@ -35,13 +42,16 @@ unsigned long durationP2;
 boolean valP2 = HIGH;
 boolean triggerP2 = false;
 
-float ratioP1 = 0;
-float ratioP2 = 0;
+// ratio is now inside calcCount
+//float ratioP1 = 0;
+//float ratioP2 = 0;
+
 float countP1;
 float countP2;
 
 
-void setup(){
+void setup()
+{
 
   // turn on GSM shield
   powerUpOrDown();
@@ -67,10 +77,8 @@ void setup(){
   }
 
   // send "I'm on" message
-  txtMsg = "DustDuinoGSM #01 on";
-  sms.beginSMS(remoteNum);
-  sms.print(txtMsg);
-  sms.endSMS();
+  txtMsg = id + " on";
+  sendSMS(txtMsg);
 
 }
 
@@ -78,10 +86,12 @@ void setup(){
 void loop()
 {
 
-  digitalWrite(7, HIGH);
-
-  valP1 = digitalRead(1); // reads PM 10
-  valP2 = digitalRead(0); // reads PM 2.5
+  // just for the DustDuino board
+  //digitalWrite(7, HIGH);
+  
+  // the pins below are inverted
+  valP1 = digitalRead(0); // reads PM 10
+  valP2 = digitalRead(1); // reads PM 2.5
 
   if(valP1 == LOW && triggerP1 == false)
   {
@@ -115,13 +125,8 @@ void loop()
   if ((millis() - starttime) > sampletime_ms)
   {
 
-    // Generates PM10 and PM2.5 count from LPO. Derived from code created by Chris Nafis
-    // http://www.howmuchsnow.com/arduino/airquality/grovedust/
-
-    ratioP1 = durationP1/(sampletime_ms*10.0);
-    ratioP2 = durationP2/(sampletime_ms*10.0);
-    countP1 = 1.1*pow(ratioP1,3)-3.8*pow(ratioP1,2)+520*ratioP1+0.62;
-    countP2 = 1.1*pow(ratioP2,3)-3.8*pow(ratioP2,2)+520*ratioP2+0.62;
+    countP1 = calcCount(durationP1);
+    countP2 = calcCount(durationP2);
     float PM10count = countP2;
     float PM25count = countP1 - countP2;
 
@@ -137,33 +142,59 @@ void loop()
     double density = 1.65*pow(10,12);
     double mass10 = density*vol10;
     double K = 3531.5;
-    float concLarge = (PM10count)*K*mass10;
+    float PM10conc = (PM10count)*K*mass10;
 
     // next, PM2.5 mass concentration algorithm
     double r25 = 0.44*pow(10,-6);
     double vol25 = (4/3)*pi*pow(r25,3);
     double mass25 = density*vol25;
-    float concSmall = (PM25count)*K*mass25;
+    float PM25conc = (PM25count)*K*mass25;
 
     // convert numbers to string
     String sPM10count = String(PM10count);
     String sPM25count = String(PM25count);
-    String sConcLarge = String(concLarge);
-    String sConcSmall = String(concSmall);
+    String sPM10conc = String(PM10conc);
+    String sPM25conc = String(PM25conc);
 
-    txtMsg = "PM10count "+ sPM10count + " PM10 " + sConcLarge + " PM25count " + sPM25count + " PM25 " + sConcSmall;
-    sms.beginSMS(remoteNum);
-    sms.print(txtMsg);
-    sms.endSMS();
+    txtMsg = "PM10count "+ sPM10count + " PM10 " + sPM10conc + " PM25count " + sPM25count + " PM25 " + sPM25conc;
+    sendSMS(txtMsg);
 
     durationP1 = 0;
     durationP2 = 0;
     starttime = millis();
   }
+  
 }
+
+float calcCount (unsigned long duration)
+{
+
+  float ratio = 0;
+  float count = 0;
+
+  // Generates PM10 and PM2.5 count from LPO. Derived from code created by Chris Nafis
+  // http://www.howmuchsnow.com/arduino/airquality/grovedust/
+
+  ratio = duration/(sampletime_ms*10.0);
+  count = 1.1*pow(ratio,3)-3.8*pow(ratio,2)+520*ratio+0.62;
+  return count;
+    
+}
+
+
+void sendSMS(String msg)
+{
+  
+  sms.beginSMS(remoteNum);
+  sms.print(txtMsg);
+  sms.endSMS();  
+
+}
+
 
 void powerUpOrDown()
 {
+  
   pinMode(6, OUTPUT); 
   digitalWrite(6,LOW);
   delay(1000);
@@ -171,6 +202,6 @@ void powerUpOrDown()
   delay(2000);
   digitalWrite(6,LOW);
   delay(3000);
+  
 }
-
 
